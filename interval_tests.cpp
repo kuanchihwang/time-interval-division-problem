@@ -10,6 +10,8 @@ using namespace std;
  * the quotient (as a long integer) and the remainder (as another TimeInterval)
  * when numerator is divided by denominator.
  *
+ * This function follows the "truncated division" definition.
+ * This function throws `domain_error` if `denominator` is 0.
  * This function is implemented just like a human carrying out a long division.
  */
 void divide(const TimeInterval &numerator,
@@ -20,9 +22,33 @@ void divide(const TimeInterval &numerator,
 	long i;                // Loop index for finding the exact quotient digit
 	long quo;              // Current quotient digit
 	TimeInterval den, num; // Working copies of `denominator` and `numerator`, respectively
+	TimeInterval ti0;      // Time interval of zero
+
+	// Check for exceptions
+	if (denominator == ti0) {
+		if (numerator == ti0) {
+			// Case: 0/0
+			cerr << "Undefined result" << endl;
+
+			throw domain_error("Undefined result");
+		}
+
+		// Case: n/0 where n != 0
+		cerr << "Divide by zero" << endl;
+
+		throw domain_error("Divide by zero");
+	}
 
 	den = denominator;
 	num = numerator;
+
+	if (den < ti0) {
+		den = den * (-1);
+	}
+
+	if (num < ti0) {
+		num = num * (-1);
+	}
 
 	quotient = 0;
 
@@ -51,6 +77,15 @@ void divide(const TimeInterval &numerator,
 
 	remainder = num;
 
+	// Restore signs
+	if ((denominator > ti0 && numerator < ti0) || (denominator < ti0 && numerator > ti0)) {
+		quotient = quotient * (-1);
+	}
+
+	if (numerator < ti0) {
+		remainder = remainder * (-1);
+	}
+
 	//
 	// The simplest algorithm...
 	//
@@ -68,6 +103,13 @@ void divide(const TimeInterval &numerator,
 	//
 }
 
+void printResult(const TimeInterval &numerator,
+                 const TimeInterval &denominator,
+                 const long &quotient,
+                 const TimeInterval &remainder)
+{
+	cout << denominator << " divides " << numerator << " " << quotient << " times with a remainder of " << remainder << endl;
+}
 
 int main(int argc, char **argv)
 {
@@ -85,8 +127,88 @@ int main(int argc, char **argv)
 	denominator.setInterval(0, 0, 200000);    // 0.2 seconds
 
 	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
 
-	cout << denominator << " divides " << numerator << " " << quotient << " times with a remainder of " << remainder << endl;
+	// `numerator`   = 0/+/-
+	// `denominator` = 0
+
+	numerator.setInterval(0, 0, 0);
+	denominator.setInterval(0, 0, 0);
+
+	try {
+		divide(numerator, denominator, quotient, remainder);
+	} catch (const domain_error &e) {
+		cout << "A domain_error exception is caught" << endl;
+	}
+
+	numerator.setInterval(100, 10, 1);
+	denominator.setInterval(0, 0, 0);
+
+	try {
+		divide(numerator, denominator, quotient, remainder);
+	} catch (const domain_error &e) {
+		cout << "A domain_error exception is caught" << endl;
+	}
+
+	numerator.setInterval(-100, -10, -1);
+	denominator.setInterval(0, 0, 0);
+
+	try {
+		divide(numerator, denominator, quotient, remainder);
+	} catch (const domain_error &e) {
+		cout << "A domain_error exception is caught" << endl;
+	}
+
+	// `numerator`   = 0
+	// `denominator` = +/-
+
+	numerator.setInterval(0, 0, 0);
+	denominator.setInterval(1, 33, 7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
+
+	numerator.setInterval(0, 0, 0);
+	denominator.setInterval(-1, -33, -7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
+
+	// `numerator`   = +
+	// `denominator` = +
+
+	numerator.setInterval(100, 10, 1);
+	denominator.setInterval(1, 33, 7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
+
+	// `numerator`   = -
+	// `denominator` = +
+
+	numerator.setInterval(-100, -10, -1);
+	denominator.setInterval(1, 33, 7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
+
+	// `numerator`   = +
+	// `denominator` = -
+
+	numerator.setInterval(100, 10, 1);
+	denominator.setInterval(-1, -33, -7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
+
+	// `numerator`   = -
+	// `denominator` = -
+
+	numerator.setInterval(-100, -10, -1);
+	denominator.setInterval(-1, -33, -7);
+
+	divide(numerator, denominator, quotient, remainder);
+	printResult(numerator, denominator, quotient, remainder);
 
 	return 0;
 }
