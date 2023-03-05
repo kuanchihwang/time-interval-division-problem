@@ -17,3 +17,33 @@ function should be as algorithmically efficient as possible. In climate
 simulations, intervals as large as several millenia may be involved, and in
 weather research, intervals as small as a fraction of a second are frequently
 used.
+
+* Example program output and timing on branch "main": (3.337 sec.)
+
+$ time ./interval_tests
+[0 days, 0.200000 s] divides [500 days, 0.000000 s] 216000000 times with a remainder of [0 days, 0.000000 s]
+
+real    0m3.337s
+user    0m3.337s
+sys     0m0.000s
+
+* Example program output and timing on branch "solution": (0.001 sec.)
+
+$ time ./interval_tests
+[0 days, 0.200000 s] divides [500 days, 0.000000 s] 216000000 times with a remainder of [0 days, 0.000000 s]
+Undefined result
+A domain_error exception is caught
+Divide by zero
+A domain_error exception is caught
+Divide by zero
+A domain_error exception is caught
+[1 days, 33.000007 s] divides [0 days, 0.000000 s] 0 times with a remainder of [0 days, 0.000000 s]
+[-1 days, -33.000007 s] divides [0 days, 0.000000 s] 0 times with a remainder of [0 days, 0.000000 s]
+[1 days, 33.000007 s] divides [100 days, 10.000001 s] 99 times with a remainder of [0 days, 83142.999308 s]
+[1 days, 33.000007 s] divides [-100 days, -10.000001 s] -99 times with a remainder of [0 days, -83142.999308 s]
+[-1 days, -33.000007 s] divides [100 days, 10.000001 s] -99 times with a remainder of [0 days, 83142.999308 s]
+[-1 days, -33.000007 s] divides [-100 days, -10.000001 s] 99 times with a remainder of [0 days, -83142.999308 s]
+
+real    0m0.001s
+user    0m0.001s
+sys     0m0.000s
