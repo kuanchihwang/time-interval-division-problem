@@ -1,2 +1,3 @@
 *.o
+ftn_div_test
 interval_tests
